@@ -39,6 +39,7 @@ jobs:
         run: |
           composer validate --strict --no-check-publish composer.json
           composer validate --strict --no-check-publish packages/core/composer.json
+          composer validate --strict --no-check-publish packages/bakong/composer.json
           composer validate --strict --no-check-publish packages/php/composer.json
           composer validate --strict --no-check-publish packages/laravel/composer.json
 

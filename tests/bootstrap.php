@@ -10,6 +10,7 @@ if (is_file($vendor)) {
 spl_autoload_register(static function (string $class): void {
     $prefixes = [
         'TonSamith\\Khqr\\Core\\' => dirname(__DIR__) . '/packages/core/src/',
+        'TonSamith\\Khqr\\Bakong\\' => dirname(__DIR__) . '/packages/bakong/src/',
         'TonSamith\\Khqr\\Php\\' => dirname(__DIR__) . '/packages/php/src/',
     ];
 

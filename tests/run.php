@@ -139,6 +139,127 @@ test('Native PHP adapter creates core instance', static function (): void {
     check(KhqrFactory::make() instanceof Khqr, 'Factory');
 });
 
+
+test('Bakong response mapper: valid USD success', static function (): void {
+    $mapper = new \TonSamith\Khqr\Bakong\BakongResponseMapper();
+    $response = json_encode([
+        'responseCode' => 0,
+        'responseMessage' => 'Getting transaction successfully.',
+        'data' => [
+            'hash' => str_repeat('a', 64),
+            'fromAccountId' => 'sender@bank',
+            'toAccountId' => 'merchant@bank',
+            'currency' => 'USD',
+            'amount' => 10.51,
+        ],
+    ], JSON_THROW_ON_ERROR);
+    $lookup = $mapper->fromJson($response);
+    same(TransactionStatus::CONFIRMED, $lookup->status, 'Provider confirmed');
+    same(1051, $lookup->amountMinor, 'Exact USD cents');
+    same('merchant@bank', $lookup->recipientAccountId, 'Recipient');
+});
+
+test('Bakong response mapper: valid KHR numeric amount', static function (): void {
+    $mapper = new \TonSamith\Khqr\Bakong\BakongResponseMapper();
+    $response = json_encode([
+        'responseCode' => 0,
+        'data' => ['hash' => str_repeat('b', 64), 'toAccountId' => 'merchant@bank',
+            'currency' => 'KHR', 'amount' => 168.0],
+    ], JSON_THROW_ON_ERROR);
+    $lookup = $mapper->fromJson($response);
+    same(TransactionStatus::CONFIRMED, $lookup->status, 'KHR confirmation');
+    same(168, $lookup->amountMinor, 'KHR integer');
+});
+
+test('Bakong response mapper: fail closed on uncertain status', static function (): void {
+    $mapper = new \TonSamith\Khqr\Bakong\BakongResponseMapper();
+    same(TransactionStatus::PENDING, $mapper->fromArray([
+        'responseCode' => 1, 'errorCode' => 1, 'data' => null
+    ])->status, 'Unknown transaction remains pending');
+    same(TransactionStatus::REVIEW, $mapper->fromArray([
+        'responseCode' => 1, 'errorCode' => 3
+    ])->status, 'Failed transaction not confirmed');
+    same(TransactionStatus::REVIEW, $mapper->fromArray([
+        'responseCode' => 0, 'data' => ['amount' => 10.5]
+    ])->status, 'Incomplete confirmation rejected');
+    same(TransactionStatus::REVIEW, $mapper->fromJson('{unparseable')->status, 'Bad JSON rejected');
+    same(TransactionStatus::REVIEW, $mapper->fromJson(str_repeat('X', 40000))->status, 'Oversize rejected');
+});
+
+test('Bakong MD5 verifier: mock transport only', static function (): void {
+    $transport = new class implements \TonSamith\Khqr\Bakong\Contracts\BakongTransportInterface {
+        public string $lastMd5 = '';
+        public function checkTransactionByMd5(string $md5): string {
+            $this->lastMd5 = $md5;
+            return '{"responseCode":1,"errorCode":1,"data":null}';
+        }
+    };
+    $verifier = new \TonSamith\Khqr\Bakong\BakongMd5Verifier($transport);
+    same(TransactionStatus::PENDING, $verifier->checkByMd5(str_repeat('A', 32))->status, 'Mock pending');
+    same(str_repeat('a', 32), $transport->lastMd5, 'Normalize MD5');
+    throwsInvalid(static fn () => $verifier->checkByMd5('not-an-md5'));
+});
+
+test('Settlement matcher rejects recipient, amount, currency mismatch', static function (): void {
+    $expected = new \TonSamith\Khqr\Core\ExpectedPayment(
+        'ORDER-22', str_repeat('a', 32), 'merchant@bank', 1050, 'USD'
+    );
+    $matcher = new \TonSamith\Khqr\Core\SettlementMatcher();
+    $receipt = static fn ($account, $minor, $currency) => new TransactionLookup(
+        TransactionStatus::CONFIRMED, str_repeat('b', 64), $account, $minor, $currency
+    );
+    check($matcher->matches($expected, $receipt('merchant@bank', 1050, 'USD')), 'Exact match required');
+    check(!$matcher->matches($expected, $receipt('attacker@bank', 1050, 'USD')), 'Wrong recipient');
+    check(!$matcher->matches($expected, $receipt('merchant@bank', 1051, 'USD')), 'Wrong amount');
+    check(!$matcher->matches($expected, $receipt('merchant@bank', 1050, 'KHR')), 'Wrong currency');
+});
+
+test('Reconciliation: settle once, then repeat safely', static function (): void {
+    $expected = new \TonSamith\Khqr\Core\ExpectedPayment(
+        'ORDER-22', str_repeat('a', 32), 'merchant@bank', 1050, 'USD'
+    );
+    $lookup = new TransactionLookup(
+        TransactionStatus::CONFIRMED, str_repeat('b', 64), 'merchant@bank', 1050, 'USD'
+    );
+    $verifier = new class($lookup) implements \TonSamith\Khqr\Core\Contracts\TransactionVerifierInterface {
+        public function __construct(private TransactionLookup $result) {}
+        public function checkByMd5(string $md5): TransactionLookup { return $this->result; }
+    };
+    $store = new class implements \TonSamith\Khqr\Core\Contracts\PaymentStoreInterface {
+        public int $calls = 0;
+        public function settleOnce(string $reference, string $md5, TransactionLookup $result): bool {
+            check($reference === 'ORDER-22', 'Reference');
+            check($md5 === str_repeat('a', 32), 'MD5');
+            $this->calls++;
+            return $this->calls === 1;
+        }
+    };
+    $service = new \TonSamith\Khqr\Core\ReconciliationService($verifier, $store);
+    same(\TonSamith\Khqr\Core\ReconciliationDecision::SETTLED, $service->reconcile($expected), 'First settlement');
+    same(\TonSamith\Khqr\Core\ReconciliationDecision::ALREADY_SETTLED, $service->reconcile($expected), 'Repeat settlement');
+    same(2, $store->calls, 'Store decides idempotency');
+});
+
+test('Reconciliation: mismatch never reaches storage', static function (): void {
+    $expected = new \TonSamith\Khqr\Core\ExpectedPayment(
+        'ORDER-22', str_repeat('a', 32), 'merchant@bank', 1050, 'USD'
+    );
+    $verifier = new class implements \TonSamith\Khqr\Core\Contracts\TransactionVerifierInterface {
+        public function checkByMd5(string $md5): TransactionLookup {
+            return new TransactionLookup(
+                TransactionStatus::CONFIRMED, str_repeat('b', 64), 'wrong@bank', 1050, 'USD'
+            );
+        }
+    };
+    $store = new class implements \TonSamith\Khqr\Core\Contracts\PaymentStoreInterface {
+        public function settleOnce(string $ref, string $md5, TransactionLookup $lookup): bool {
+            throw new RuntimeException('Must not store mismatch');
+        }
+    };
+    $service = new \TonSamith\Khqr\Core\ReconciliationService($verifier, $store);
+    same(\TonSamith\Khqr\Core\ReconciliationDecision::REVIEW, $service->reconcile($expected), 'Wrong recipient rejected');
+});
+
 echo PHP_EOL . sprintf('Results: %d passed, %d failed', $passes, $failures) . PHP_EOL;
 exit($failures === 0 ? 0 : 1);
 

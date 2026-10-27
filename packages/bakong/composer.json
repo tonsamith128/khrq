@@ -1,0 +1,21 @@
+{
+  "name": "tonsamith/khqr-bakong",
+  "description": "Offline protocol mapper and pluggable authorized Bakong transaction-check transport.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Ton Samith",
+      "homepage": "https://tonsamith.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "tonsamith/khqr-core": "^0.0.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "TonSamith\\Khqr\\Bakong\\": "src/"
+    }
+  }
+}

@@ -7,6 +7,14 @@ All notable changes to KHQR will be recorded here. This is a foundation release,
 - Plan authenticated Bakong provider adapters and production sandbox acceptance.
 - Plan provider-specific merchant tag 30 integration, QR artwork, persistence, and gateway.
 
+## [0.0.2-dev] — 2026-10-28
+
+- Add offline Bakong MD5 lookup response mapping; reject malformed/ambiguous results.
+- Add expected-payment matching, reconciliation decisions and replay-aware store contract.
+- Add opt-in Laravel transactional ledger and publishing-only migration.
+- Add mock provider regression tests and provider eligibility documentation.
+- Not yet production settlement ready; live provider transport and sandbox acceptance pending.
+
 ## [0.0.1] — 2026-10-27
 
 - Define framework-neutral Composer monorepo and PHP/Laravel extension points.
