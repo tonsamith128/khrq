@@ -1,0 +1,15 @@
+{
+  "name": "tonsamith/khqr-core",
+  "description": "Framework-independent PHP KHQR payload codec, generator, and verification contracts.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [{"name": "Ton Samith", "homepage": "https://tonsamith.com"}],
+  "homepage": "https://khqr.tonsamith.com",
+  "require": {
+    "php": "^8.2"
+  },
+  "autoload": {
+    "psr-4": {"TonSamith\\Khqr\\Core\\": "src/"}
+  }
+}
+
