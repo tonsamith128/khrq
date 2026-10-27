@@ -3,7 +3,12 @@
   "description": "Development workspace for KHQR framework-independent PHP SDK and adapters.",
   "type": "project",
   "license": "MIT",
-  "authors": [{"name": "Ton Samith", "homepage": "https://tonsamith.com"}],
+  "authors": [
+    {
+      "name": "Ton Samith",
+      "homepage": "https://tonsamith.com"
+    }
+  ],
   "homepage": "https://khqr.tonsamith.com",
   "require": {
     "php": "^8.2"
@@ -11,7 +16,8 @@
   "autoload": {
     "psr-4": {
       "TonSamith\\Khqr\\Core\\": "packages/core/src/",
-      "TonSamith\\Khqr\\Php\\": "packages/php/src/"
+      "TonSamith\\Khqr\\Php\\": "packages/php/src/",
+      "TonSamith\\Khqr\\Bakong\\": "packages/bakong/src/"
     }
   },
   "scripts": {
@@ -21,4 +27,3 @@
   "minimum-stability": "stable",
   "prefer-stable": true
 }
-

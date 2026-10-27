@@ -3,20 +3,31 @@
   "description": "Laravel integration adapter for Ton Samith KHQR core.",
   "type": "library",
   "license": "MIT",
-  "authors": [{"name": "Ton Samith", "homepage": "https://tonsamith.com"}],
+  "authors": [
+    {
+      "name": "Ton Samith",
+      "homepage": "https://tonsamith.com"
+    }
+  ],
   "require": {
     "php": "^8.2",
     "illuminate/support": "^10.0 || ^11.0 || ^12.0",
-    "tonsamith/khqr-core": "^0.0.1"
+    "tonsamith/khqr-core": "^0.0.1",
+    "illuminate/database": "^10.0 || ^11.0 || ^12.0"
   },
   "autoload": {
-    "psr-4": {"TonSamith\\Khqr\\Laravel\\": "src/"}
+    "psr-4": {
+      "TonSamith\\Khqr\\Laravel\\": "src/"
+    }
   },
   "extra": {
     "laravel": {
-      "providers": ["TonSamith\\Khqr\\Laravel\\KhqrServiceProvider"],
-      "aliases": {"Khqr": "TonSamith\\Khqr\\Laravel\\Facades\\Khqr"}
+      "providers": [
+        "TonSamith\\Khqr\\Laravel\\KhqrServiceProvider"
+      ],
+      "aliases": {
+        "Khqr": "TonSamith\\Khqr\\Laravel\\Facades\\Khqr"
+      }
     }
   }
 }
-

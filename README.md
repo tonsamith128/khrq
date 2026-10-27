@@ -17,6 +17,16 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
+## v0.0.2 verification safety (in development)
+
+The next-stage code lives on the review branch and adds an offline Bakong
+response mapper, an explicitly injected provider transport, strict receipt
+matching, safe reconciliation decisions, and an optional Laravel
+transactional ledger. **It does not include approved credentials, a
+default live HTTP transport, or a production-ready payment processor.**
+
+Read [Verification Safety v0.0.2](docs/verification-v002.md) before use.
+
 ## Scope in v0.0.1
 
 - PHP 8.2+ and Composer-first monorepo.

@@ -39,6 +39,7 @@ jobs:
         run: |
           composer validate --strict --no-check-publish composer.json
           composer validate --strict --no-check-publish packages/core/composer.json
+          composer validate --strict --no-check-publish packages/bakong/composer.json
           composer validate --strict --no-check-publish packages/php/composer.json
           composer validate --strict --no-check-publish packages/laravel/composer.json
 
@@ -47,3 +48,27 @@ jobs:
           composer install --no-interaction --no-progress --prefer-dist
           php tests/run.php
           php examples/plain-php/generate.php
+
+  laravel-ledger:
+    name: Laravel SQLite ledger acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP and SQLite
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, sqlite3
+          tools: composer:v2
+          coverage: none
+      - name: Install development autoloading
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Install test-only Illuminate dependencies
+        run: |
+          mkdir -p /tmp/khqr-illuminate
+          printf '%s\n' '{"name":"tonsamith/khqr-test-deps","require":{"php":"^8.3","illuminate/database":"^12.0","illuminate/support":"^12.0"},"minimum-stability":"stable"}' > /tmp/khqr-illuminate/composer.json
+          composer install --working-dir=/tmp/khqr-illuminate --no-interaction --no-progress --prefer-dist
+      - name: Run Laravel ledger acceptance
+        env:
+          KHQR_LARAVEL_VENDOR: /tmp/khqr-illuminate/vendor
+        run: php tests/laravel-store.php
