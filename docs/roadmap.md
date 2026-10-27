@@ -8,7 +8,7 @@
 - Core settlement and storage contracts; PHP and Laravel adapter scaffolds.
 - Offline regression tests and GitHub CI.
 
-## v0.0.2-dev — Payment verification safety (feature branch / review)
+## v0.0.2-dev — Payment verification safety (merged into main)
 
 - Provider-neutral expected-payment model and receipt matcher.
 - Offline Bakong response adapter with fail-closed pending/review handling.
@@ -17,7 +17,7 @@
   manually published optional migration.
 - Mocked provider and replay/mismatch test cases.
 
-## Next (v0.0.2 acceptance)
+## Next (v0.0.3 MySQL acceptance work)
 
 - Run isolated Laravel + MySQL integration tests (including concurrent settlement).
 - Obtain authorized NBC/acquirer sandbox approval and credentials.

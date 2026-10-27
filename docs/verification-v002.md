@@ -1,9 +1,9 @@
 # KHQR verification safety — v0.0.2 development milestone
 
-**Status: review candidate. Not yet cleared for live transactions.**
+**Status: merged as v0.0.2 development foundation. Not cleared for live transactions.**
 
-The Bakong API protocol defines a POST to §/v1/check_transaction_by_md5§,
-with JSON body containing §md5§ and a server-held §Authorization: Bearer§ token.
+The Bakong API protocol defines a POST to `/v1/check_transaction_by_md5`,
+with JSON body containing `md5` and a server-held `Authorization: Bearer` token.
 The current registration portal states a limit of 100 requests per day.
 Merchant/commercial usage eligibility must be confirmed with an authorized bank
 or payment service provider before production use.
@@ -14,13 +14,13 @@ Current registration portal: https://api-bakong.nbc.gov.kh/register
 
 ## Implemented
 
-- §packages/bakong§: strict offline response mapper and an interface for an
+- `packages/bakong`: strict offline response mapper and an interface for an
   injected, authenticated provider transport. **No default HTTP client or
   API credential is shipped.**
-- §ExpectedPayment§: canonical expected order reference, QR MD5, recipient,
+- `ExpectedPayment`: canonical expected order reference, QR MD5, recipient,
   integer minor-unit amount and currency.
-- §SettlementMatcher§: strict receipt vs. expected-order comparison.
-- §ReconciliationService§: pending / review / settled / already-settled decisions.
+- `SettlementMatcher`: strict receipt vs. expected-order comparison.
+- `ReconciliationService`: pending / review / settled / already-settled decisions.
 - Laravel optional migration and an idempotent, transactional payment store.
 - Mock-provider tests with negative cases.
 
@@ -41,12 +41,12 @@ periodic reconciliation through an authorized payment provider.
 ## Required host flow
 
 1. Validate incoming order and construct dynamic KHQR.
-2. Persist §ExpectedPayment§ and its QR MD5 using §createPending§ or an equivalent secure store before displaying QR.
+2. Persist `ExpectedPayment` and its QR MD5 using `createPending` or an equivalent secure store before displaying QR.
 3. A worker uses `LaravelPaymentStore::loadExpected($orderReference)` or equivalent to load expectation **from its own database**; never take expected
    amount, recipient or MD5 from the browser.
-4. Construct §BakongMd5Verifier§ with a transport that was separately
+4. Construct `BakongMd5Verifier` with a transport that was separately
    approved to use an authenticated provider.
-5. Run §ReconciliationService::reconcile($expected)§.
+5. Run `ReconciliationService::reconcile($expected)`.
 6. Publish order-paid / fulfill only on a newly persisted SETTLED decision.
 7. Audit review/pending decisions and retry with a quota-aware scheduler.
 

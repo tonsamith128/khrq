@@ -7,6 +7,13 @@ All notable changes to KHQR will be recorded here. This is a foundation release,
 - Plan authenticated Bakong provider adapters and production sandbox acceptance.
 - Plan provider-specific merchant tag 30 integration, QR artwork, persistence, and gateway.
 
+## [Unreleased v0.0.3-dev]
+
+- Add opt-in ephemeral MySQL 8 database acceptance with concurrent PHP workers.
+- Verify idempotent same-order replay and database-enforced cross-order transfer-hash collisions.
+- Prevent accidental test execution against production databases.
+- Keep live Bakong transport and production settlement disabled.
+
 ## [0.0.2-dev] — 2026-10-28
 
 - Add offline Bakong MD5 lookup response mapping; reject malformed/ambiguous results.

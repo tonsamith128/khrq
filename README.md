@@ -19,13 +19,13 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 ## v0.0.2 verification safety (in development)
 
-The next-stage code lives on the review branch and adds an offline Bakong
+The v0.0.2-dev foundation is merged into main, adding an offline Bakong
 response mapper, an explicitly injected provider transport, strict receipt
 matching, safe reconciliation decisions, and an optional Laravel
 transactional ledger. **It does not include approved credentials, a
 default live HTTP transport, or a production-ready payment processor.**
 
-Read [Verification Safety v0.0.2](docs/verification-v002.md) before use.
+Read [Verification Safety v0.0.2](docs/verification-v002.md) before use. MySQL 8 race-condition tests are being added in the v0.0.3 test milestone; see [MySQL Acceptance](docs/mysql-acceptance.md).
 
 ## Scope in v0.0.1
 
