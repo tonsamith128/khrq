@@ -42,7 +42,7 @@ periodic reconciliation through an authorized payment provider.
 
 1. Validate incoming order and construct dynamic KHQR.
 2. Persist §ExpectedPayment§ and its QR MD5 using §createPending§ or an equivalent secure store before displaying QR.
-3. A worker loads expectation **from its own database**; never take expected
+3. A worker uses `LaravelPaymentStore::loadExpected($orderReference)` or equivalent to load expectation **from its own database**; never take expected
    amount, recipient or MD5 from the browser.
 4. Construct §BakongMd5Verifier§ with a transport that was separately
    approved to use an authenticated provider.
@@ -68,7 +68,7 @@ must namespace order references and account data or provide their own store.
 
 ## Integration warning
 
-The GitHub CI runs offline core and provider contract tests. It does not
+The GitHub CI runs offline core/provider contract tests and a SQLite database-ledger acceptance job. It does not
 connect to NBC/banks, simulate a real bank transfer, or test the optional
 Laravel migration on a full Laravel application. Production activation
 requires separately controlled sandbox testing and an approval gate.

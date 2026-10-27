@@ -43,6 +43,28 @@ final readonly class LaravelPaymentStore implements PaymentStoreInterface
         ]);
     }
 
+    /**
+     * Always load trusted expected values from the merchant's database.
+     * Never construct ExpectedPayment from a browser payment-status request.
+     */
+    public function loadExpected(string $orderReference): ExpectedPayment
+    {
+        $row = $this->connection->table('khqr_payment_requests')
+            ->where('order_reference', $orderReference)->first();
+
+        if ($row === null) {
+            throw new RuntimeException('KHQR payment order was not found.');
+        }
+
+        return new ExpectedPayment(
+            (string) $row->order_reference,
+            (string) $row->lookup_md5,
+            (string) $row->recipient_account_id,
+            (int) $row->amount_minor,
+            (string) $row->currency,
+        );
+    }
+
     public function settleOnce(
         string $merchantOrderReference,
         string $lookupMd5,

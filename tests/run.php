@@ -260,6 +260,22 @@ test('Reconciliation: mismatch never reaches storage', static function (): void 
     same(\TonSamith\Khqr\Core\ReconciliationDecision::REVIEW, $service->reconcile($expected), 'Wrong recipient rejected');
 });
 
+
+test('Provider status cannot silently confirm pending transfer', static function (): void {
+    $mapper = new \TonSamith\Khqr\Bakong\BakongResponseMapper();
+    $observation = $mapper->fromArray([
+        'responseCode' => 0,
+        'data' => [
+            'hash' => str_repeat('a', 64),
+            'toAccountId' => 'merchant@bank',
+            'currency' => 'KHR',
+            'amount' => 1000,
+            'trackingStatus' => 'PENDING',
+        ],
+    ]);
+    same(TransactionStatus::REVIEW, $observation->status, 'Pending tracking status is not paid');
+});
+
 echo PHP_EOL . sprintf('Results: %d passed, %d failed', $passes, $failures) . PHP_EOL;
 exit($failures === 0 ? 0 : 1);
 

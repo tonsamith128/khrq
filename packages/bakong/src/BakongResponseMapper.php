@@ -50,6 +50,15 @@ final class BakongResponseMapper
             return new TransactionLookup(TransactionStatus::REVIEW);
         }
 
+        // Some acquiring-bank adapters include an explicit status even
+        // when their API envelope reports success. Fail closed if not SUCCESS.
+        foreach (['status', 'trackingStatus'] as $field) {
+            if (array_key_exists($field, $data) &&
+                (!is_string($data[$field]) || strtoupper($data[$field]) !== 'SUCCESS')) {
+                return new TransactionLookup(TransactionStatus::REVIEW);
+            }
+        }
+
         $hash = $data['hash'] ?? null;
         $recipient = $data['toAccountId'] ?? null;
         $currency = $data['currency'] ?? null;
