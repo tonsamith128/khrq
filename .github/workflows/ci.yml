@@ -72,3 +72,48 @@ jobs:
         env:
           KHQR_LARAVEL_VENDOR: /tmp/khqr-illuminate/vendor
         run: php tests/laravel-store.php
+
+  mysql-ledger:
+    name: MySQL 8 ledger acceptance
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_root_only_not_production
+          MYSQL_DATABASE: khqr_test
+          MYSQL_USER: khqr_test
+          MYSQL_PASSWORD: test_ledger_only_not_production
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -ptest_root_only_not_production"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP for isolated MySQL tests
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql
+          tools: composer:v2
+          coverage: none
+      - name: Install project autoloading
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Install test-only database components
+        run: |
+          mkdir -p /tmp/khqr-illuminate
+          printf '%s\n' '{"name":"tonsamith/khqr-test-mysql","require":{"php":"^8.3","illuminate/database":"^12.0","illuminate/support":"^12.0"},"minimum-stability":"stable"}' > /tmp/khqr-illuminate/composer.json
+          composer install --working-dir=/tmp/khqr-illuminate --no-interaction --no-progress --prefer-dist
+      - name: Isolated MySQL concurrency and settlement acceptance
+        env:
+          KHQR_ACCEPT_ISOLATED_TEST_DB: 'YES'
+          KHQR_LARAVEL_VENDOR: /tmp/khqr-illuminate/vendor
+          KHQR_TEST_MYSQL_HOST: 127.0.0.1
+          KHQR_TEST_MYSQL_PORT: '3306'
+          KHQR_TEST_MYSQL_DATABASE: khqr_test
+          KHQR_TEST_MYSQL_USER: khqr_test
+          KHQR_TEST_MYSQL_PASSWORD: test_ledger_only_not_production
+        run: php tests/mysql-ledger.php
