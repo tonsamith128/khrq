@@ -17,5 +17,8 @@
     "psr-4": {
       "TonSamith\\Khqr\\Bakong\\": "src/"
     }
+  },
+  "suggest": {
+    "ext-curl": "Required only when using the secure HTTPS network transport."
   }
 }

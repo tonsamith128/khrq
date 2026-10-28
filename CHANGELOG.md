@@ -2,6 +2,14 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased v0.0.4-dev]
+
+- Add explicit network-enable gate, HTTPS-only fixed endpoint allowlist and secure cURL transport.
+- Add backend token supplier, no redirect, no proxy, bounded timeouts and response size limit.
+- Add locked UTC-day file quota state (100 calls/day maximum).
+- Add mocked transport security tests across PHP 8.2/8.3/8.4.
+- Keep live bank testing, commercial approval and production rollout out of scope.
+
 ## [Unreleased]
 
 - Plan authenticated Bakong provider adapters and production sandbox acceptance.

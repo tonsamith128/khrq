@@ -33,7 +33,9 @@ jobs:
         run: php tests/lint.php
 
       - name: Unit and regression suite
-        run: php tests/run.php
+        run: |
+          php tests/run.php
+          php tests/bakong-http.php
 
       - name: Validate Composer manifests
         run: |
@@ -47,6 +49,7 @@ jobs:
         run: |
           composer install --no-interaction --no-progress --prefer-dist
           php tests/run.php
+          php tests/bakong-http.php
           php examples/plain-php/generate.php
 
   laravel-ledger:

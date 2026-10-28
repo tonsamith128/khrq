@@ -21,7 +21,10 @@
     }
   },
   "scripts": {
-    "test": "php tests/run.php",
+    "test": [
+      "@php tests/run.php",
+      "@php tests/bakong-http.php"
+    ],
     "lint": "php tests/lint.php"
   },
   "minimum-stability": "stable",
