@@ -17,7 +17,19 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
-## v0.0.2 verification safety (in development)
+## v0.0.4-dev — opt-in Bakong HTTP adapter (PR candidate)
+
+A secure HTTPS-only transport is under development on the
+`feature/bakong-opt-in-http-transport-v004` branch. It supports an authorized,
+server-side MD5 lookup using an injected token, a fixed host allowlist,
+strict timeouts and an atomic daily request budget. Networking remains
+**disabled by default**. No bank credentials, sandbox transfers, or live
+payment acceptance tests are included.
+
+Read [Bakong HTTP integration](docs/bakong-http-integration.md) and
+[Provider approval issue #3](https://github.com/tonsamith128/khrq/issues/3).
+
+## v0.0.2 verification safety (merged)
 
 The v0.0.2-dev foundation is merged into main, adding an offline Bakong
 response mapper, an explicitly injected provider transport, strict receipt
@@ -25,7 +37,7 @@ matching, safe reconciliation decisions, and an optional Laravel
 transactional ledger. **It does not include approved credentials, a
 default live HTTP transport, or a production-ready payment processor.**
 
-Read [Verification Safety v0.0.2](docs/verification-v002.md) before use. MySQL 8 race-condition tests are being added in the v0.0.3 test milestone; see [MySQL Acceptance](docs/mysql-acceptance.md).
+Read [Verification Safety v0.0.2](docs/verification-v002.md) before use. MySQL 8 race-condition tests passed in the v0.0.3 test milestone; see [MySQL Acceptance](docs/mysql-acceptance.md).
 
 ## Scope in v0.0.1
 

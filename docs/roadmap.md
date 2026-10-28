@@ -17,7 +17,19 @@
   manually published optional migration.
 - Mocked provider and replay/mismatch test cases.
 
-## Next (v0.0.3 MySQL acceptance work)
+## v0.0.3 — MySQL concurrency acceptance (merged)
+
+- Isolated MySQL 8 worker race tests and distinct transaction-hash enforcement passed.
+- PHP 8.2/8.3/8.4 and SQLite acceptance on main passed.
+
+## v0.0.4-dev — Authorized HTTP transport (candidate)
+
+- HTTPS-only transport, default-deny network gate, fixed provider host and no redirects.
+- Token on server, bounded timeouts and UTC-day shared quota.
+- Offline mock request tests and documented opt-in workflow.
+- Await actual bank/PSI approval, sandbox credentials and current API validation.
+
+## Next (provider acceptance)
 
 - Run isolated Laravel + MySQL integration tests (including concurrent settlement).
 - Obtain authorized NBC/acquirer sandbox approval and credentials.
