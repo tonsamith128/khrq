@@ -67,6 +67,20 @@ jobs:
           php tests/bank-issued-order-review.php
           php examples/plain-php/generate.php
 
+  opencv-jammy:
+    name: Ubuntu 22.04 OpenCV 4.5 bank QR regression
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install local OpenCV matching Ubuntu 22.04
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-opencv python3-qrcode python3-pil
+          /usr/bin/python3 -c 'import cv2; assert cv2.__version__.startswith("4.5."), "Expected Jammy OpenCV 4.5"; print("OPENCV_JAMMY=AVAILABLE")'
+      - name: Run private screenshot decoder regression (synthetic only)
+        run: |
+          /usr/bin/python3 tests/opencv-qr-fallback.py
+
   laravel-ledger:
     name: Laravel SQLite ledger acceptance
     runs-on: ubuntu-latest

@@ -17,6 +17,14 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
+## v0.0.9-dev — Ubuntu 22.04 QR screenshot decoding hardening
+
+A richer OpenCV fallback attempts the original, detected QR-region crops,
+grayscale, normalized center crops and a bounded threshold pass. Tests include
+a **synthetic center-logo QR screenshot** on Ubuntu 22.04 OpenCV 4.5.4 in CI.
+Only local private image files are inspected; no real bank data is stored
+in the repository and no settlement is enabled.
+
 ## v0.0.8-dev — OpenCV fallback and reference-free bank QR safety
 
 The private bank QR preflight tries local zbar first and **automatically

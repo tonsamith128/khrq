@@ -126,8 +126,10 @@ if ($mode === 'text-file') {
         $scanners['ZBAR'] = ['/usr/bin/zbarimg', '--quiet', '--raw', $file];
     }
     if (is_executable('/usr/bin/python3') &&
+        is_executable('/usr/bin/timeout') &&
         is_file(__DIR__ . '/qr-opencv-decode.py')) {
         $scanners['OPENCV'] = [
+            '/usr/bin/timeout', '--signal=TERM', '40s',
             '/usr/bin/python3', __DIR__ . '/qr-opencv-decode.py', $file,
         ];
     }
