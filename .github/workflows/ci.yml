@@ -38,8 +38,16 @@ jobs:
           php tests/bakong-http.php
           php tests/read-only-acceptance.php
           php tests/bank-qr-preflight.php
+          php tests/bank-issued-order-review.php
           php tools/bakong-connection-check.php --dry-run
           php -r 'if (preg_match("/\\bcurl_close\\s*\\(\\s*\\$/", file_get_contents("packages/bakong/src/Http/CurlHttpClient.php"))) { fwrite(STDERR, "Deprecated curl_close invocation detected.\\n"); exit(1); } echo "CURL_LIFECYCLE=PHP_8_COMPATIBLE\\n";'
+
+      - name: Local OpenCV offline QR fallback smoke (synthetic-only)
+        if: matrix.php == '8.5'
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-opencv python3-qrcode python3-pil
+          /usr/bin/python3 tests/opencv-qr-fallback.py
 
       - name: Validate Composer manifests
         run: |
@@ -56,6 +64,7 @@ jobs:
           php tests/bakong-http.php
           php tests/read-only-acceptance.php
           php tests/bank-qr-preflight.php
+          php tests/bank-issued-order-review.php
           php examples/plain-php/generate.php
 
   laravel-ledger:

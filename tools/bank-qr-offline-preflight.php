@@ -24,14 +24,15 @@ KHQR offline compatibility preflight — NO BANK CONNECTION
   php tools/bank-qr-offline-preflight.php --image-file=/root/.config/khqr/aba.png
 
 Accepts a local private text file containing the raw, decoded QR payload,
-OR a local private PNG/JPEG QR image when /usr/bin/zbarimg is installed.
+OR a local private PNG/JPEG QR image via zbarimg or optional OpenCV.
 
 Security requirements: absolute file path, 0600 permissions, containing
 private directory 0700. Never paste a raw bank QR in chat, GitHub, CLI
 arguments or a publicly served directory.
 
-Text preflight uses only core PHP. Image preflight uses the local zbarimg
-scanner (zbar-tools), never an online QR decoder.
+Text preflight uses only core PHP. Image preflight uses local zbarimg
+(zbar-tools), falling back to optional /usr/bin/python3 with cv2.
+Neither decoder uses online QR services.
 
 Results reveal only QR structure, template, currency, amount/reference
 presence and SDK compatibility — NEVER account identifiers or payment data.
@@ -108,9 +109,7 @@ if ($mode === 'text-file') {
     $bytes = qrReadPrivateFile($file, 2097152);
     unset($bytes);
 
-    if (!is_file('/usr/bin/zbarimg') || !is_executable('/usr/bin/zbarimg')) {
-        qrFail('LOCAL_ZBARIMG_NOT_INSTALLED');
-    }
+
     if (!function_exists('exif_imagetype')) {
         qrFail('PHP_EXIF_EXTENSION_REQUIRED');
     }
@@ -119,28 +118,52 @@ if ($mode === 'text-file') {
         qrFail('PNG_OR_JPEG_REQUIRED');
     }
 
-    $pipes = [];
-    $process = @proc_open(
-        ['/usr/bin/zbarimg', '--quiet', '--raw', $file],
-        [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
-        $pipes,
-        dirname($file),
-    );
+    // Prefer lightweight zbar, then the optional local Python/OpenCV decoder.
+    // Both may see the raw bank QR, so redirect ALL decoder output into pipes.
+    // Nothing from either decoder is printed, logged, or sent over a network.
+    $scanners = [];
+    if (is_executable('/usr/bin/zbarimg')) {
+        $scanners['ZBAR'] = ['/usr/bin/zbarimg', '--quiet', '--raw', $file];
+    }
+    if (is_executable('/usr/bin/python3') &&
+        is_file(__DIR__ . '/qr-opencv-decode.py')) {
+        $scanners['OPENCV'] = [
+            '/usr/bin/python3', __DIR__ . '/qr-opencv-decode.py', $file,
+        ];
+    }
 
-    if (!is_resource($process)) {
+    $payload = null;
+    $decoder = null;
+    foreach ($scanners as $name => $command) {
+        $pipes = [];
+        $process = @proc_open(
+            $command,
+            [0 => ['pipe', 'r'], 1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+            $pipes,
+            dirname($file),
+        );
+        if (!is_resource($process)) {
+            continue;
+        }
+        fclose($pipes[0]);
+        $output = stream_get_contents($pipes[1], 2049);
+        // Errors can contain private paths or payment details; discard.
+        stream_get_contents($pipes[2], 2049);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $exit = proc_close($process);
+
+        if ($exit === 0 && is_string($output) &&
+            $output !== '' && strlen($output) <= 2048) {
+            $payload = rtrim($output, "\r\n");
+            $decoder = $name;
+            break;
+        }
+    }
+
+    if ($payload === null) {
         qrFail('LOCAL_SCANNER_FAILED');
     }
-    fclose($pipes[0]);
-    $output = stream_get_contents($pipes[1], 2049);
-    // Ignore diagnostic text (which could contain the QR or account).
-    stream_get_contents($pipes[2], 2049);
-    fclose($pipes[1]);
-    fclose($pipes[2]);
-    $exit = proc_close($process);
-    if ($exit !== 0 || !is_string($output) || strlen($output) > 2048) {
-        qrFail('LOCAL_SCANNER_FAILED');
-    }
-    $payload = rtrim($output, "\r\n");
 }
 
 try {
@@ -152,6 +175,7 @@ try {
 }
 
 echo "QR_PREFLIGHT=COMPLETED_OFFLINE\n";
+echo "LOCAL_DECODER=" . ($decoder ?? "TEXT_FILE") . PHP_EOL;
 foreach ($result as $key => $value) {
     echo strtoupper($key) . '=' . $value . PHP_EOL;
 }
