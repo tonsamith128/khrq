@@ -72,3 +72,11 @@ order paid without independent, authenticated settlement evidence.
 - Laravel SQLite end-to-end settlement and replay/collision acceptance with synthetic bank data.
 - Live bank transfer, tag 30 merchant QR, provider authorization, reconciliation worker and production payment settlement all remain gated.
 
+
+## v0.0.7-dev — ABA/ACLEDA bank QR preflight
+
+- Offline inspection of bank-generated QR rather than fabricated account routing.
+- Distinguish bank-valid static/tag-30 QR from current tag-29 dynamic flow.
+- Require explicit bank/PSI permission and recipient verification before transfer.
+- No bank settlement, token access or live payment execution.
+

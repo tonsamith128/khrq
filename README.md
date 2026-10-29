@@ -17,6 +17,18 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
+## v0.0.7-dev — Bank-issued QR offline compatibility preflight
+
+Inspect an actual bank-issued QR **locally** before an ABA-to-ACLEDA test.
+`BankQrCompatibility` and `tools/bank-qr-offline-preflight.php` read
+private decoded QR text or an optional PNG/JPEG image through local zbarimg.
+They report only redacted structural flags and **never access your token,
+connect to Bakong, transfer funds, or settle orders**. Static and merchant
+tag 30 QRs may be bank-valid but are not currently supported by the SDK's
+dynamic individual-order binding.
+
+See [ABA + ACLEDA QR preflight](docs/aba-acleda-qr-preflight.md).
+
 ## v0.0.6-dev — Read-only real-payment acceptance foundation
 
 The v0.0.6 development milestone binds a **real dynamic individual KHQR
@@ -152,4 +164,5 @@ This is an **independent community software project** authored by Ton Samith. It
 ## License
 
 MIT for the code in this repository. See [LICENSE](LICENSE). Separate future hosted or commercial products may be licensed independently without re-licensing existing MIT-covered code.
+
 
