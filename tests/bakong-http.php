@@ -241,6 +241,82 @@ scenario('Reject invalid provider content type, size and JSON', static function 
     }
 });
 
+
+scenario('Token file accepts only private regular file in private directory', static function (): void {
+    $dir = sys_get_temp_dir() . '/khqr-token-test-' . bin2hex(random_bytes(8));
+    verify(mkdir($dir, 0700), 'Create private token directory');
+    $path = $dir . '/provider.token';
+    $link = $dir . '/provider.link';
+    try {
+        file_put_contents($path, str_repeat('X', 32) . "\n");
+        chmod($path, 0600);
+        $reader = new \TonSamith\Khqr\Bakong\Http\PrivateTokenFile($path);
+        verify($reader->get() === str_repeat('X', 32), 'Private token can be read');
+
+        chmod($path, 0644);
+        shouldFail(static fn () => $reader->get(), BakongTransportException::class);
+        chmod($path, 0600);
+
+        file_put_contents($path, 'short');
+        shouldFail(static fn () => $reader->get(), BakongTransportException::class);
+
+        file_put_contents($path, str_repeat('X', 32));
+        verify(symlink($path, $link), 'Create link');
+        shouldFail(static fn () => (new \TonSamith\Khqr\Bakong\Http\PrivateTokenFile($link))->get(), BakongTransportException::class);
+
+        unlink($link);
+        chmod($dir, 0755);
+        shouldFail(static fn () => $reader->get(), BakongTransportException::class);
+        chmod($dir, 0700);
+    } finally {
+        if (is_link($link)) {
+            unlink($link);
+        }
+        if (is_file($path)) {
+            unlink($path);
+        }
+        chmod($dir, 0700);
+        rmdir($dir);
+    }
+});
+
+scenario('CLI cannot access network without explicit confirmation', static function (): void {
+    $tool = dirname(__DIR__) . '/tools/bakong-connection-check.php';
+    $commands = [
+        [PHP_BINARY, $tool, '--dry-run'],
+        [PHP_BINARY, $tool],
+    ];
+
+    foreach ($commands as $args) {
+        $pipes = [];
+        $process = proc_open($args, [1 => ['pipe', 'w'], 2 => ['pipe', 'w']], $pipes, dirname(__DIR__));
+        verify(is_resource($process), 'Launch CLI');
+        $stdout = stream_get_contents($pipes[1]);
+        $stderr = stream_get_contents($pipes[2]);
+        fclose($pipes[1]);
+        fclose($pipes[2]);
+        $code = proc_close($process);
+        verify($code === 0 && str_contains($stdout, 'NETWORK=DISABLED'), 'Dry-run never connects');
+        verify($stderr === '', 'Dry-run has no errors');
+    }
+
+    $pipes = [];
+    $process = proc_open(
+        [PHP_BINARY, $tool, '--execute', '--environment=production'],
+        [1 => ['pipe', 'w'], 2 => ['pipe', 'w']],
+        $pipes,
+        dirname(__DIR__),
+    );
+    verify(is_resource($process), 'Launch unconfirmed CLI');
+    $stdout = stream_get_contents($pipes[1]);
+    $stderr = stream_get_contents($pipes[2]);
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    $code = proc_close($process);
+    verify($code === 2 && str_contains($stderr, 'PRECHECK_NOT_SATISFIED'), 'Unconfirmed production call blocked');
+    verify($stdout === '', 'Never claims network success');
+});
+
 echo PHP_EOL . sprintf('Transport tests: %d passed, %d failed', $passes, $failures) . PHP_EOL;
 exit($failures === 0 ? 0 : 1);
 

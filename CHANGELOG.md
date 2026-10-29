@@ -2,7 +2,15 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
-## [Unreleased v0.0.4-dev]
+## [Unreleased v0.0.5-dev]
+
+- Add a security-checked private token reader (0600 regular file in 0700 directory).
+- Add default-off local CLI for SIT/production endpoint connection checks.
+- Require explicit provider approval confirmation before consuming an API request.
+- Never display tokens, full provider responses, account details, or modify ledger state.
+- Add token-permission and no-network regression tests across PHP versions.
+
+## [0.0.4-dev]
 
 - Add explicit network-enable gate, HTTPS-only fixed endpoint allowlist and secure cURL transport.
 - Add backend token supplier, no redirect, no proxy, bounded timeouts and response size limit.
