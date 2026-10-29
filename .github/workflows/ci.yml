@@ -36,6 +36,7 @@ jobs:
         run: |
           php tests/run.php
           php tests/bakong-http.php
+          php tools/bakong-connection-check.php --dry-run
 
       - name: Validate Composer manifests
         run: |

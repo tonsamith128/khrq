@@ -17,10 +17,19 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
-## v0.0.4-dev — opt-in Bakong HTTP adapter (PR candidate)
+## v0.0.5-dev — Secure Bakong API connection check (candidate)
 
-A secure HTTPS-only transport is under development on the
-`feature/bakong-opt-in-http-transport-v004` branch. It supports an authorized,
+After receiving an authorized NBC/Bakong API token, operators may use
+a **local private-token file**, an explicit opt-in CLI and per-environment
+rate limit to run a controlled read-only MD5 lookup. The tool does **not**
+print tokens, make payments or mark orders settled. Network stays off until
+both authorization flags are provided.
+
+See [Token connection guide](docs/bakong-token-connection.md).
+
+## v0.0.4-dev — opt-in Bakong HTTP adapter (merged)
+
+A secure HTTPS-only transport is merged into `main`. It supports an authorized,
 server-side MD5 lookup using an injected token, a fixed host allowlist,
 strict timeouts and an atomic daily request budget. Networking remains
 **disabled by default**. No bank credentials, sandbox transfers, or live

@@ -22,7 +22,7 @@
 - Isolated MySQL 8 worker race tests and distinct transaction-hash enforcement passed.
 - PHP 8.2/8.3/8.4 and SQLite acceptance on main passed.
 
-## v0.0.4-dev — Authorized HTTP transport (candidate)
+## v0.0.4-dev — Authorized HTTP transport (merged)
 
 - HTTPS-only transport, default-deny network gate, fixed provider host and no redirects.
 - Token on server, bounded timeouts and UTC-day shared quota.
@@ -53,4 +53,13 @@
 
 A developer milestone is **not** live payment certification. Never mark an
 order paid without independent, authenticated settlement evidence.
+
+
+## v0.0.5-dev — Secret-safe live connection smoke (candidate)
+
+- Private token file permissions/size/symlink checks.
+- Explicit SIT/production operator selection, no network by default.
+- Requires deliberate authorized-use flag and production acknowledgement.
+- Read-only MD5 status lookup only; no bank transfer or settlement.
+- No CI live calls; actual NBC token remains server-side and uncommitted.
 
