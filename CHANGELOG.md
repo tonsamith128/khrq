@@ -2,6 +2,16 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased v0.0.10-dev — Read-only ABA/ACLEDA receipt verification]
+
+- Add provider-neutral, offline read-only bank QR → order → receipt review.
+- Reference-free ABA QR always reports UNBOUND, even for matching provider receipt.
+- Distinguish pending/review/QR mismatch/unsupported from matched-but-unsettled.
+- Detect same QR, bank transfer hash and merchant order claimed multiple times.
+- Add synthetic negative, replay/collision and no-order-correlation tests.
+- Document required bank/PSI account-eligibility and transaction-ID confirmation.
+- No real transfer, bank request, token handling or auto-settlement activation.
+
 ## [Unreleased v0.0.9-dev — OpenCV 4.5 screenshot decoding hardening]
 
 - Add multi-pass, offline OpenCV decoding for bank-issued QR screenshots with a central logo.

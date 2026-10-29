@@ -39,6 +39,7 @@ jobs:
           php tests/read-only-acceptance.php
           php tests/bank-qr-preflight.php
           php tests/bank-issued-order-review.php
+          php tests/bank-receipt-review.php
           php tools/bakong-connection-check.php --dry-run
           php -r 'if (preg_match("/\\bcurl_close\\s*\\(\\s*\\$/", file_get_contents("packages/bakong/src/Http/CurlHttpClient.php"))) { fwrite(STDERR, "Deprecated curl_close invocation detected.\\n"); exit(1); } echo "CURL_LIFECYCLE=PHP_8_COMPATIBLE\\n";'
 
@@ -65,6 +66,7 @@ jobs:
           php tests/read-only-acceptance.php
           php tests/bank-qr-preflight.php
           php tests/bank-issued-order-review.php
+          php tests/bank-receipt-review.php
           php examples/plain-php/generate.php
 
   opencv-jammy:

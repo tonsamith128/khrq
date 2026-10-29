@@ -80,3 +80,13 @@ order paid without independent, authenticated settlement evidence.
 - Require explicit bank/PSI permission and recipient verification before transfer.
 - No bank settlement, token access or live payment execution.
 
+
+## v0.0.10-dev — Bank receipt verification foundation
+
+- Offline bank-issued QR + trusted persisted order + externally authenticated
+  observation matching without database writes or network calls.
+- Reference-free ABA QR remains unbound; no assumptions about tags 40/99.
+- Duplicate QR MD5, transfer hash and order collisions reviewed in batches.
+- Strictly separate read-only matching from a bank-attested unique order binding.
+- **Still blocked:** Bank/PSI approval, account classification, transaction-ID
+  attribution, authorized paid acceptance, production settlement and refunds.

@@ -17,6 +17,19 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
+## v0.0.10-dev — ABA/ACLEDA read-only bank receipt review
+
+`ReadOnlyBankReceiptReviewer` compares a bank-issued KHQR, a trusted
+merchant order and an externally authenticated provider observation,
+without bank API calls or database writes. Missing tag 62 always means
+**REFERENCE_FREE_UNBOUND** even with a matching confirmed provider receipt;
+opaque ABA tags 40/99 are never used as proof of a unique order.
+A batch auditor flags repeated QR, transaction hash or merchant order
+identifiers; database uniqueness is still required for production safety.
+
+[Read the v0.0.10 acceptance plan](docs/bank-receipt-verification-v0010.md).
+No automatic settlement or live merchant processing is enabled.
+
 ## v0.0.9-dev — Ubuntu 22.04 QR screenshot decoding hardening
 
 Ubuntu 22.04's system OpenCV 4.5.4 can fail on dense QR screenshots. Use an
