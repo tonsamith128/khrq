@@ -43,6 +43,12 @@ final class BankQrCompatibility
             'amount_embedded' => isset($tags['54']) ? 'YES' : 'NO',
             'reference_embedded' => $hasReference ? 'YES' : 'NO',
             'current_qr_binding_compatible' => $eligible ? 'YES' : 'NO',
+            // Do not attribute opaque bank fields (such as 40/99) to a
+            // unique order. Their meaning is provider-specific and unverified.
+            'bank_extension_tags_present' => (isset($tags['40']) || isset($tags['99'])) ? 'YES' : 'NO',
+            'reference_free_order_review' =>
+                $template === 'INDIVIDUAL_TAG_29' && $method === 'DYNAMIC' &&
+                !$hasReference ? 'PROVIDER_UNIQUE_BINDING_REQUIRED' : 'NOT_APPLICABLE',
             'provider_verification' => 'NOT_EXECUTED',
             'payment_settlement' => 'DISABLED',
         ];

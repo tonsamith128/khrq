@@ -17,6 +17,22 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 > **Foundation release — not production-payment certified.** QR generation does not establish that funds were received. No live Bakong/bank API integration, settlement service, hosted dashboard, or live payment callback is included in v0.0.1. A merchant must perform an authorized server-side settlement check before fulfilling an order.
 
+## v0.0.8-dev — OpenCV fallback and reference-free bank QR safety
+
+The private bank QR preflight tries local zbar first and **automatically
+falls back to OpenCV** when zbar cannot decode a dense QR (such as a QR
+with a center logo). OpenCV is an optional server dependency: install
+Ubuntu's `python3-opencv` for the system `/usr/bin/python3` interpreter.
+
+`BankQrOrderReview` can compare a real bank-issued dynamic tag-29 QR
+against a trusted merchant order **offline**, but if tag 62 is absent it
+will **require independent provider-approved uniqueness/attribution proof**.
+Bank-specific tags 40 and 99 are treated as opaque, never as proof
+of a unique paid order. No account identifiers, payloads or MD5s are
+logged; automatic settlement remains disabled.
+
+See [ABA QR local OpenCV fallback and order-proof limits](docs/aba-opencv-order-review.md).
+
 ## v0.0.7-dev — Bank-issued QR offline compatibility preflight
 
 Inspect an actual bank-issued QR **locally** before an ABA-to-ACLEDA test.

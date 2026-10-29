@@ -2,6 +2,15 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased v0.0.8-dev]
+
+- Optional offline OpenCV fallback for center-logo/high-density bank-issued QR images.
+- Preserve private file checks and redact decoded contents; no bank HTTP requests.
+- New fail-closed, read-only bank-issued QR to trusted-order comparison.
+- Tag-62-free bank QR remains unbound until bank-approved uniqueness evidence exists.
+- No assumptions about ABA proprietary tags 40/99; no production settlement enabled.
+- Synthetic OpenCV decoder and offline order-review regression tests.
+
 ## [Unreleased v0.0.7-dev]
 
 - Add offline privacy-preserving bank-issued QR compatibility inspection.
