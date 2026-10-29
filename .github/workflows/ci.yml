@@ -37,7 +37,7 @@ jobs:
           php tests/run.php
           php tests/bakong-http.php
           php tools/bakong-connection-check.php --dry-run
-          php -r 'if (preg_match("/\\bcurl_close\\s*\\(/", file_get_contents("packages/bakong/src/Http/CurlHttpClient.php"))) { fwrite(STDERR, "Deprecated curl_close invocation detected.\\n"); exit(1); } echo "CURL_LIFECYCLE=PHP_8_COMPATIBLE\\n";'
+          php -r 'if (preg_match("/\\bcurl_close\\s*\\(\\s*\\$/", file_get_contents("packages/bakong/src/Http/CurlHttpClient.php"))) { fwrite(STDERR, "Deprecated curl_close invocation detected.\\n"); exit(1); } echo "CURL_LIFECYCLE=PHP_8_COMPATIBLE\\n";'
 
       - name: Validate Composer manifests
         run: |
