@@ -63,3 +63,12 @@ order paid without independent, authenticated settlement evidence.
 - Read-only MD5 status lookup only; no bank transfer or settlement.
 - No CI live calls; actual NBC token remains server-side and uncommitted.
 
+
+## v0.0.6-dev — Read-only transaction acceptance foundation
+
+- Validate actual dynamic individual QR (tag 29, CRC, exact order reference and amount) against trusted merchant order data.
+- Read-only provider observation with explicit `MATCHED_NOT_SETTLED` result.
+- Offline provider success / pending / mismatch / invalid status tests.
+- Laravel SQLite end-to-end settlement and replay/collision acceptance with synthetic bank data.
+- Live bank transfer, tag 30 merchant QR, provider authorization, reconciliation worker and production payment settlement all remain gated.
+

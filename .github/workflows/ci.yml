@@ -36,6 +36,7 @@ jobs:
         run: |
           php tests/run.php
           php tests/bakong-http.php
+          php tests/read-only-acceptance.php
           php tools/bakong-connection-check.php --dry-run
           php -r 'if (preg_match("/\\bcurl_close\\s*\\(\\s*\\$/", file_get_contents("packages/bakong/src/Http/CurlHttpClient.php"))) { fwrite(STDERR, "Deprecated curl_close invocation detected.\\n"); exit(1); } echo "CURL_LIFECYCLE=PHP_8_COMPATIBLE\\n";'
 
@@ -52,6 +53,7 @@ jobs:
           composer install --no-interaction --no-progress --prefer-dist
           php tests/run.php
           php tests/bakong-http.php
+          php tests/read-only-acceptance.php
           php examples/plain-php/generate.php
 
   laravel-ledger:
@@ -76,7 +78,9 @@ jobs:
       - name: Run Laravel ledger acceptance
         env:
           KHQR_LARAVEL_VENDOR: /tmp/khqr-illuminate/vendor
-        run: php tests/laravel-store.php
+        run: |
+          php tests/laravel-store.php
+          php tests/laravel-lifecycle.php
 
   mysql-ledger:
     name: MySQL 8 ledger acceptance

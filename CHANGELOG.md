@@ -2,6 +2,14 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased v0.0.6-dev]
+
+- Add verified dynamic individual KHQR → trusted order expectation binding.
+- Add read-only provider response inspector that can MATCH but NEVER settle.
+- Add synthetic bank-response matrix covering match, pending, recipient/amount/currency mismatch, and ambiguous status.
+- Add full mocked-provider → SQLite reconciliation ledger tests, including replay/cross-order collision rollback.
+- Document actual small-transfer acceptance gates; no money moved or live bank testing in CI.
+
 ## [Unreleased hotfix — PHP 8.5]
 
 - Remove deprecated `curl_close()` invocation in Bakong HTTPS transport.
