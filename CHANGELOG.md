@@ -2,6 +2,15 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased v0.0.7-dev]
+
+- Add offline privacy-preserving bank-issued QR compatibility inspection.
+- Distinguish individual/merchant templates, static/dynamic mode, currency,
+  amount/reference presence and current SDK order-binding eligibility.
+- Add private text and optional local image decoder, no online decoding.
+- Test invalid QR, unsupported bank template, private-file permissions and
+  redacted CLI output; no bank network call, token use or transfer.
+
 ## [Unreleased v0.0.6-dev]
 
 - Add verified dynamic individual KHQR → trusted order expectation binding.
@@ -61,4 +70,5 @@ All notable changes to KHQR will be recorded here. This is a foundation release,
 - Introduce typed money conversion, transaction verifier/store interfaces, and exceptions.
 - Document risk controls, installation, licensing, and roadmap.
 - Add local tests, PHP lint checks, and GitHub CI.
+
 
