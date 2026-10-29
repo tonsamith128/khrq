@@ -82,7 +82,9 @@ final class CurlHttpClient implements HttpClientInterface
 
             return new HttpResponse($code, $type, $buffer);
         } finally {
-            curl_close($handle);
+            // PHP 8+ manages CurlHandle lifetime automatically. curl_close()
+            // became a no-op in 8.0 and raises E_DEPRECATED in PHP 8.5.
+            unset($handle);
         }
     }
 }
