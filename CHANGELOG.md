@@ -2,6 +2,15 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased v0.0.9-dev — OpenCV 4.5 screenshot decoding hardening]
+
+- Add multi-pass, offline OpenCV decoding for bank-issued QR screenshots with a central logo.
+- Preserve private-file permissions and discard decoder errors; no QR payload, account identifier or token in CI.
+- Bound OpenCV subprocess with system timeout and retain fail-closed semantics.
+- Test modern OpenCV 4.13 inside a private Ubuntu 22.04 virtual environment;
+  Ubuntu's OpenCV 4.5 failed the dense synthetic check and is not relied upon.
+- No bank call, payment transfer or settlement enabled.
+
 ## [Unreleased v0.0.8-dev]
 
 - Optional offline OpenCV fallback for center-logo/high-density bank-issued QR images.
