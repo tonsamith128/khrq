@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.2', '8.3', '8.4']
+        php: ['8.2', '8.3', '8.4', '8.5']
 
     steps:
       - name: Checkout
@@ -37,6 +37,7 @@ jobs:
           php tests/run.php
           php tests/bakong-http.php
           php tools/bakong-connection-check.php --dry-run
+          php -r 'if (preg_match("/\\bcurl_close\\s*\\(/", file_get_contents("packages/bakong/src/Http/CurlHttpClient.php"))) { fwrite(STDERR, "Deprecated curl_close invocation detected.\\n"); exit(1); } echo "CURL_LIFECYCLE=PHP_8_COMPATIBLE\\n";'
 
       - name: Validate Composer manifests
         run: |

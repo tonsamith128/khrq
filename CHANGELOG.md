@@ -2,6 +2,14 @@
 
 All notable changes to KHQR will be recorded here. This is a foundation release, not an approved payment processing product.
 
+## [Unreleased hotfix — PHP 8.5]
+
+- Remove deprecated `curl_close()` invocation in Bakong HTTPS transport.
+- Let PHP's `CurlHandle` object clean up automatically, with explicit final-scope release.
+- Expand CI coverage to PHP 8.5 and guard against the deprecated call.
+- Confirmed read-only production MD5 connectivity by operator (HTTP 200, pending).
+  This does NOT demonstrate a paid transaction or activate settlement.
+
 ## [Unreleased v0.0.5-dev]
 
 - Add a security-checked private token reader (0600 regular file in 0700 directory).
