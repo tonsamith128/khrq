@@ -19,11 +19,13 @@ KHQR is a framework-independent PHP library for encoding, decoding, and validati
 
 ## v0.0.9-dev — Ubuntu 22.04 QR screenshot decoding hardening
 
-A richer OpenCV fallback attempts the original, detected QR-region crops,
-grayscale, normalized center crops and a bounded threshold pass. Tests include
-a **synthetic center-logo QR screenshot** on Ubuntu 22.04 OpenCV 4.5.4 in CI.
-Only local private image files are inspected; no real bank data is stored
-in the repository and no settlement is enabled.
+Ubuntu 22.04's system OpenCV 4.5.4 can fail on dense QR screenshots. Use an
+**opt-in isolated Python virtual environment** with pinned
+`opencv-python-headless==4.13.0.92` instead; system Python is unchanged.
+The private decoder attempts the original, detected QR-region crops,
+grayscale and normalization within a 40-second bound. CI tests the isolated
+modern version on Ubuntu 22.04 using synthetic logo screenshots.
+No bank data is stored in the repo and no settlement is enabled.
 
 ## v0.0.8-dev — OpenCV fallback and reference-free bank QR safety
 

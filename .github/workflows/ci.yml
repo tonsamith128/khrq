@@ -68,18 +68,21 @@ jobs:
           php examples/plain-php/generate.php
 
   opencv-jammy:
-    name: Ubuntu 22.04 OpenCV 4.5 bank QR regression
+    name: Ubuntu 22.04 isolated modern QR decoder
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
-      - name: Install local OpenCV matching Ubuntu 22.04
+      - name: Prepare isolated decoder on Ubuntu 22.04
         run: |
           sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-opencv python3-qrcode python3-pil
-          /usr/bin/python3 -c 'import cv2; assert cv2.__version__.startswith("4.5."), "Expected Jammy OpenCV 4.5"; print("OPENCV_JAMMY=AVAILABLE")'
-      - name: Run private screenshot decoder regression (synthetic only)
-        run: |
-          /usr/bin/python3 tests/opencv-qr-fallback.py
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends python3-venv python3-qrcode python3-pil
+          /usr/bin/python3 -m venv /tmp/khqr-qr-venv
+          /tmp/khqr-qr-venv/bin/python3 -m pip install --no-cache-dir --only-binary=:all: "numpy==2.2.6" "opencv-python-headless==4.13.0.92"
+          /tmp/khqr-qr-venv/bin/python3 -c 'import cv2; assert cv2.__version__.startswith("4.13."), "Expected isolated OpenCV 4.13"; print("OPENCV_ISOLATED=AVAILABLE")'
+      - name: Synthetic private QR and central-logo screenshot acceptance
+        env:
+          KHQR_TEST_DECODE_PYTHON: /tmp/khqr-qr-venv/bin/python3
+        run: /usr/bin/python3 tests/opencv-qr-fallback.py
 
   laravel-ledger:
     name: Laravel SQLite ledger acceptance

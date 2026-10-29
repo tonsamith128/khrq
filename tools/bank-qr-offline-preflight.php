@@ -31,7 +31,8 @@ private directory 0700. Never paste a raw bank QR in chat, GitHub, CLI
 arguments or a publicly served directory.
 
 Text preflight uses only core PHP. Image preflight uses local zbarimg
-(zbar-tools), falling back to optional /usr/bin/python3 with cv2.
+(zbar-tools), falling back to optional private qr-venv OpenCV 4.13, then system
+/usr/bin/python3 with cv2 if available.
 Neither decoder uses online QR services.
 
 Results reveal only QR structure, template, currency, amount/reference
@@ -125,6 +126,17 @@ if ($mode === 'text-file') {
     if (is_executable('/usr/bin/zbarimg')) {
         $scanners['ZBAR'] = ['/usr/bin/zbarimg', '--quiet', '--raw', $file];
     }
+    // Prefer opt-in private modern OpenCV without modifying system Python.
+    $privatePython = dirname($file) . '/qr-venv/bin/python3';
+    if (is_executable($privatePython) &&
+        is_executable('/usr/bin/timeout') &&
+        is_file(__DIR__ . '/qr-opencv-decode.py')) {
+        $scanners['OPENCV_ISOLATED'] = [
+            '/usr/bin/timeout', '--signal=TERM', '40s',
+            $privatePython, __DIR__ . '/qr-opencv-decode.py', $file,
+        ];
+    }
+
     if (is_executable('/usr/bin/python3') &&
         is_executable('/usr/bin/timeout') &&
         is_file(__DIR__ . '/qr-opencv-decode.py')) {
